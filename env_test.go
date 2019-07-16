@@ -26,6 +26,7 @@ IgnoreSpace = text
 RespectSingleQuoteSpace = ' text'
 RespectDoubleQuoteSpace = " text"
 KeyOverrideByEnv=NotThis
+KeyPi=3.14
 `
 )
 
@@ -132,13 +133,13 @@ func TestConfigEnvTrue(t *testing.T) {
 	defer filet.CleanUp(t)
 
 	variables := []variable{
-		{option: "KeyTrue", value: true},
-		{option: "KeyOne", value: true},
-		{option: "KeyYes", value: true},
-		{option: "KeyOn", value: true},
+		{option: "KeyTrue", value: true, cast: "bool"},
+		{option: "KeyOne", value: true, cast: "bool"},
+		{option: "KeyYes", value: true, cast: "bool"},
+		{option: "KeyOn", value: true, cast: "bool"},
 	}
 	for _, v := range variables {
-		if value := Config(v.option, v.def, "bool"); value != v.value {
+		if value := Config(v.option, v.def, v.cast); value != v.value {
 			t.Errorf("'%v' wait '%v' got '%v'", v.option, value, value)
 		}
 	}
@@ -238,5 +239,51 @@ func TestEnvDefaultValue(t *testing.T) {
 			t.Errorf("'%v' wait '%v' got '%v'", v.option, v.def, value)
 		}
 	}
+}
 
+func TestConfigEnvInt(t *testing.T) {
+	filet.File(t, filenameEnv, envFile)
+	defer filet.CleanUp(t)
+
+	variables := []variable{
+		{option: "KeyOne", value: 1, cast: "int"},
+		{option: "KeyZero", value: 0, cast: "int"},
+	}
+	for _, v := range variables {
+		if value := Config(v.option, v.def, v.cast); value != v.value {
+			t.Errorf("'%v' wait '%v' got '%v'", v.option, value, value)
+		}
+	}
+}
+
+func TestConfigEnvFloat(t *testing.T) {
+	filet.File(t, filenameEnv, envFile)
+	defer filet.CleanUp(t)
+
+	variables := []variable{
+		{option: "KeyOne", value: 1, cast: "float"},
+		{option: "KeyZero", value: 0, cast: "float"},
+		{option: "KeyPi", value: 3.14, cast: "float"},
+	}
+	for _, v := range variables {
+		if value := Config(v.option, v.def, v.cast); value != v.value {
+			t.Errorf("'%v' wait '%v' got '%v'", v.option, value, value)
+		}
+	}
+}
+
+func TestConfigEnvString(t *testing.T) {
+	filet.File(t, filenameEnv, envFile)
+	defer filet.CleanUp(t)
+
+	variables := []variable{
+		{option: "IgnoreSpace", value: "text", cast: "string"},
+		{option: "RespectSingleQuoteSpace", value: " text", cast: "string"},
+		{option: "RespectDoubleQuoteSpace", value: " text", cast: "string"},
+	}
+	for _, v := range variables {
+		if value := Config(v.option, v.def, v.cast); value != v.value {
+			t.Errorf("'%v' wait '%v' got '%v'", v.option, value, value)
+		}
+	}
 }

@@ -30,12 +30,12 @@ func (r repositoryIni) Get(option string, def, cast interface{}) interface{} {
 		value = key.String()
 	}
 
-	if cast == "bool" {
-		value, err = castBoolean(value.(string))
+	if cast != nil {
+		value, err = castValue(value.(string), cast.(string))
 		if err != nil {
 			panic(err)
 		}
-		return *value.(*bool)
+		return value
 	}
 
 	return value

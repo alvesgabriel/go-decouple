@@ -3,6 +3,7 @@ package decouple
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -21,6 +22,20 @@ var (
 		"":      false,
 	}
 )
+
+func castValue(value, cast string) (interface{}, error) {
+	switch cast {
+	case "bool":
+		v, err := castBoolean(value)
+		return *v, err
+	case "int":
+		return strconv.ParseInt(value, 10, 64)
+	case "float":
+		return strconv.ParseFloat(value, 64)
+	default:
+		return value, nil
+	}
+}
 
 // castBoolean helps to convert config values to boolean as ConfigParser do.
 func castBoolean(value string) (*bool, error) {

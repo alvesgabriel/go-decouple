@@ -19,12 +19,12 @@ func (r repositoryEmpty) Get(option string, def, cast interface{}) interface{} {
 		return nil
 	}
 
-	if cast == "bool" && valueStr != "" {
-		value, err := castBoolean(valueStr)
+	if cast != nil && valueStr != "" {
+		value, err := castValue(valueStr, cast.(string))
 		if err != nil {
 			panic(err)
 		}
-		return *value
+		return value
 	}
 
 	return valueStr

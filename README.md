@@ -1,4 +1,4 @@
-Go Decouple (based [python-decouple](https://github.com/henriquebastos/python-decouple)): Strict separation of settings from code
+Go Decouple (based on [python-decouple](https://github.com/henriquebastos/python-decouple)): Strict separation of settings from code
 =================================================================================================================================
 
 *Decouple* helps you to organize your settings so that you can change parameters without having to redeploy your app.
@@ -143,13 +143,6 @@ on the first time it is used.
 ## Understanding the CAST argument
 
 By default, all values returned by `decouple` are `strings`, after all they are read from `text files` or the `envvars`.
-
-However, your Python code may expect some other value type, for example:
-
-* Django's `DEBUG` expects a boolean `True` or `False`.
-* Django's `EMAIL_PORT` expects an `integer`.
-* Django's `ALLOWED_HOSTS` expects a `list` of hostnames.
-* Django's `SECURE_PROXY_SSL_HEADER` expects a `tuple` with two elements, the name of the header to look for and the required value.
 
 To meet this need, the `Config` function accepts a `cast` argument which receives any *string* name of type, that will be used to *transform* the string value into something else.
 

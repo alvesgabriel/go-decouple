@@ -256,13 +256,28 @@ func TestConfigEnvInt(t *testing.T) {
 	}
 }
 
+func TestConfigEnvInt64(t *testing.T) {
+	filet.File(t, filenameEnv, envFile)
+	defer filet.CleanUp(t)
+
+	variables := []variable{
+		{option: "KeyOne", value: int64(1), cast: "int64"},
+		{option: "KeyZero", value: int64(0), cast: "int64"},
+	}
+	for _, v := range variables {
+		if value := Config(v.option, v.def, v.cast); value != v.value {
+			t.Errorf("'%v' wait '%v' got '%v'", v.option, value, value)
+		}
+	}
+}
+
 func TestConfigEnvFloat(t *testing.T) {
 	filet.File(t, filenameEnv, envFile)
 	defer filet.CleanUp(t)
 
 	variables := []variable{
-		{option: "KeyOne", value: 1, cast: "float"},
-		{option: "KeyZero", value: 0, cast: "float"},
+		{option: "KeyOne", value: 1.0, cast: "float"},
+		{option: "KeyZero", value: 0.0, cast: "float"},
 		{option: "KeyPi", value: 3.14, cast: "float"},
 	}
 	for _, v := range variables {

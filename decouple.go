@@ -29,6 +29,8 @@ func castValue(value, cast string) (interface{}, error) {
 		v, err := castBoolean(value)
 		return *v, err
 	case "int":
+		return strconv.Atoi(value)
+	case "int64":
 		return strconv.ParseInt(value, 10, 64)
 	case "float":
 		return strconv.ParseFloat(value, 64)

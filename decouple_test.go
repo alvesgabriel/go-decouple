@@ -14,11 +14,6 @@ type variable struct {
 	cast   interface{}
 }
 
-// func TestMain(m *testing.M) {
-// 	var t *testing.T
-// 	defer filet.CleanUp(t)
-// }
-
 func TestConfig(t *testing.T) {
 	variables := []variable{
 		{option: "KeyFallback", value: "On"},

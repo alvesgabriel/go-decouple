@@ -2,80 +2,58 @@ package decouple
 
 import (
 	"fmt"
-	"reflect"
-	"strconv"
-	"strings"
 
-	"github.com/pkg/errors"
+	"github.com/alvesgabriel/go-decouple/repository"
 )
-
-var (
-	boolean = map[string]bool{
-		"1":     true,
-		"yes":   true,
-		"true":  true,
-		"on":    true,
-		"0":     false,
-		"no":    false,
-		"false": false,
-		"off":   false,
-		"":      false,
-	}
-)
-
-func castValue(value, cast string) (interface{}, error) {
-	switch cast {
-	case "bool":
-		v, err := castBoolean(value)
-		return *v, err
-	case "int":
-		return strconv.Atoi(value)
-	case "int64":
-		return strconv.ParseInt(value, 10, 64)
-	case "float":
-		return strconv.ParseFloat(value, 64)
-	default:
-		return value, nil
-	}
-}
-
-// castBoolean helps to convert config values to boolean as ConfigParser do.
-func castBoolean(value string) (*bool, error) {
-	if v, ok := boolean[strings.ToLower(value)]; ok {
-		return &v, nil
-	}
-	return nil, errors.Errorf("Not a boolean: %s", value)
-}
 
 // Config function improve decouple's usability now just import decouple and use Config and start using with no configuration.
-func Config(option string, def, cast interface{}) interface{} {
-	var r repository
+func Config[Type repository.EnvVar](key string, def interface{}) (Type, error) {
+	var r repository.Repository
+	var cast Type
 
-	r = repositoryEmpty{}
-	value := r.Get(option, def, cast)
-	if value != nil {
-		return value
+	r = &repository.RepositoryEmpty{}
+	value := r.Get(key)
+	if value == "" {
+		return cast, fmt.Errorf("")
 	}
 
-	r = repositoryEnv{}
-	value = r.Get(option, def, cast)
-	if value != nil {
-		return value
-	}
+	return repository.Cast(value, cast)
+	// switch fmt.Sprintf("%T", cast) {
+	// case "int":
+	// 	num, err := strconv.Atoi(value)
+	// 	if err != nil {
+	// 		return cast, err
+	// 	}
+	// 	return Type(num), nil
+	// 	// case int64:
+	// 	// 	return strconv.ParseInt(value, 10, 64)
+	// 	// case float64:
+	// 	// 	return strconv.ParseFloat(value, 64)
+	// 	// default:
+	// 	// 	return Type(value), nil
+	// }
 
-	r = repositoryIni{}
-	value = r.Get(option, def, cast)
-	if value != nil {
-		return value
-	}
+	// r = repositoryEnv{}
+	// value = r.Get(option, def, cast)
+	// if value != nil {
+	// 	return value
+	// }
 
-	if def != nil {
-		if cast == "bool" && reflect.TypeOf(def).Kind() != reflect.Bool {
-			err := fmt.Sprintf("Can't cast '%v' to '%v'", def, cast)
-			panic(err)
-		}
-		return def
-	}
+	// r = repositoryIni{}
+	// value = r.Get(option, def, cast)
+	// if value != nil {
+	// 	return value
+	// }
 
-	panic(fmt.Sprintf("%s not found. Declare it as envvar or define a default value.", option))
+	// if def != nil {
+	// 	if cast == "bool" && reflect.TypeOf(def).Kind() != reflect.Bool {
+	// 		err := fmt.Sprintf("Can't cast '%v' to '%v'", def, cast)
+	// 		panic(err)
+	// 	}
+	// 	return def
+	// }
+
+	// panic(fmt.Sprintf("%s not found. Declare it as envvar or define a default value.", option))
+
+	return cast, fmt.Errorf("%s not found. Declare it as envvar or define a default value.", key)
 }

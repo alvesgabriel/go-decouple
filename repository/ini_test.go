@@ -1,4 +1,4 @@
-package decouple
+package repository_test
 
 import (
 	"os"
